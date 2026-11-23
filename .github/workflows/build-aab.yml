@@ -1,0 +1,39 @@
+name: Build MINING PRO AAB
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Extract project
+        run: unzip -q MINING_PRO_Android_AdMob_Phone_Build.zip -d extracted
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.11.1
+
+      - name: Build AAB
+        working-directory: extracted/MINING_PRO_Android_AdMob
+        run: gradle bundleRelease
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MINING-PRO-AAB
+          path: extracted/MINING_PRO_Android_AdMob/app/build/outputs/bundle/release/*.aab
