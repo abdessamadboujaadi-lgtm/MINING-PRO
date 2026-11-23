@@ -1,7 +1,5 @@
 name: Build MINING PRO Simulator APK
 
-name: Build MINING PRO Simulator APK
-
 on:
   workflow_dispatch:
   push:
